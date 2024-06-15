@@ -76,7 +76,8 @@ def predict_image(imageFile: UploadFile, response: Response):
             response.status_code = 400
             return "File is not an image"
         
-        image = load_image(imageFile.file.read())
+        image_data = imageFile.file.read()
+        image = load_image(image_data)
         
         img_height, img_width = 224, 224 
         image = image.resize((img_height, img_width))
@@ -92,9 +93,9 @@ def predict_image(imageFile: UploadFile, response: Response):
         confidence_score = np.max(predictions, axis=1)[0]
         
         # Store Image to Cloud Storage uncomment if in prod
-        
+        image_file_name = imageFile.filename
         if is_valid_prediction(confidence_score):
-            uploadPredictionImage(True, predicted_class_name=predicted_class_name, imageFile=image)
+            uploadPredictionImage(True, predicted_class_name=predicted_class_name, image_data=image_data, image_file_name=image_file_name)
             return {
                 "status": "Success",
                 "message": "Model succesfully predict the image",
@@ -105,7 +106,7 @@ def predict_image(imageFile: UploadFile, response: Response):
                     },
             }
         else:
-            uploadPredictionImage(False, predicted_class_name=predicted_class_name, imageFile=image)
+            uploadPredictionImage(False, predicted_class_name=predicted_class_name, image_data=image_data, image_file_name=image_file_name)
             return {
                 "status": "Fail",
                 "message": "Confidence Score Under Threshold",
@@ -124,16 +125,16 @@ def is_valid_prediction(prediction, threshold=0.2):
     confidence = np.max(prediction)
     return confidence > threshold
 
-def uploadPredictionImage(validPred: bool, predicted_class_name: string, imageFile: Image ):
-    if(not validPred):
+def uploadPredictionImage(validPred: bool, predicted_class_name: str, image_data: bytes, image_file_name: str):
+    if not validPred:
         predicted_class_name = "unknown"
     
-    local_image_path = f"./uploads/{predicted_class_name}/{imageFile.filename}"
+    local_image_path = f"./uploads/{predicted_class_name}/{image_file_name}"
     os.makedirs(os.path.dirname(local_image_path), exist_ok=True)
     with open(local_image_path, "wb") as f:
-        f.write(imageFile.file.read())
+        f.write(image_data)
             
-    destination_blob_name = f"uploads/{predicted_class_name}/{imageFile.filename}"
+    destination_blob_name = f"uploads/{predicted_class_name}/{image_file_name}"
     upload_image(bucket_name, local_image_path, destination_blob_name)
     os.remove(local_image_path)
 

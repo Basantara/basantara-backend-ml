@@ -8,16 +8,13 @@ RUN pip install -r requirements.txt
 
 ARG MODEL_URL
 
-ENV MODEL_URL=${MODEL_URL}
+ADD ${MODEL_URL} /workspace/
+
+COPY . .
 
 ENV PYTHONUNBUFFERED=1
 
 ENV HOST 0.0.0.0
-
-RUN apt-get update && apt-get install -y wget unzip && \
-    wget -O model.h5 "${MODEL_URL}"
-
-COPY . .
 
 EXPOSE 8080
 
