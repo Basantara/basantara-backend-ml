@@ -46,6 +46,11 @@ def download_modelh5(url, dest_path):
             f.write(chunk)
     
     print(f"Model downloaded to {dest_path}")
+    
+# Threshold Logic
+def is_valid_prediction(prediction, threshold=0.5):
+    confidence = np.max(prediction)
+    return confidence > threshold
 
 # Uncomment if the model is in cloud
 # download_and_unzip_model(model_url, local_model_path) # saved_model format
@@ -99,12 +104,17 @@ def predict_image(imageFile: UploadFile, response: Response):
         # destination_blob_name = f"uploads/{predicted_class_name}/{imageFile.filename}"
         # upload_image(bucket_name, local_image_path, destination_blob_name)
         # os.remove(local_image_path)
-        
-        return {
-            "predicted_class": int(predicted_class), 
-            "class_name": predicted_class_name,
-            "confidence_score": float(confidence_score)
-        }
+        if is_valid_prediction(confidence_score):
+            return {
+                "predicted_class": int(predicted_class), 
+                "class_name": predicted_class_name,
+                "confidence_score": float(confidence_score)
+            }
+        else:
+            return {
+                "message": "Confidence Score Under Threshold",
+                "confidence_score": float(confidence_score)
+            }
     except Exception as e:
         traceback.print_exc()
         response.status_code = 500
