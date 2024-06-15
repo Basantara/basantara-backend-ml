@@ -134,7 +134,7 @@ def uploadPredictionImage(validPred: bool, predicted_class_name: str, image_data
     with open(local_image_path, "wb") as f:
         f.write(image_data)
             
-    destination_blob_name = f"uploads/{predicted_class_name}/{image_file_name}"
+    destination_blob_name = f"{predicted_class_name}/{image_file_name}"
     upload_image(bucket_name, local_image_path, destination_blob_name)
     os.remove(local_image_path)
 
