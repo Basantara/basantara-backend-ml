@@ -160,3 +160,7 @@ cython_debug/
 #.idea/
 
 venv
+
+# local model
+model.h5
+saved_model

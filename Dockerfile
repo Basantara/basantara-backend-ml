@@ -6,6 +6,10 @@ COPY requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt
 
+ARG MODEL_URL
+
+ADD ${MODEL_URL} /workspace/
+
 COPY . .
 
 ENV PYTHONUNBUFFERED=1

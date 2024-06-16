@@ -160,3 +160,7 @@ cython_debug/
 #.idea/
 
 venv
+
+# AI model
+saved_model
+model.h5
