@@ -7,4 +7,4 @@ Basantara is an educational application designed to provide a comprehensive lear
 
 ## API Documentation
 ### Swagger API Documentation
-https://dev-basantara-api-2akzaauh3q-et.a.run.app/api-docs/
+https://dev-basantara-ml-api-2akzaauh3q-et.a.run.app/docs
