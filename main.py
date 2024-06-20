@@ -74,7 +74,10 @@ def predict_image(imageFile: UploadFile, response: Response):
     try:
         if imageFile.content_type not in ["image/jpeg", "image/png"]:
             response.status_code = 400
-            return "File is not an image"
+            return {
+                "status": "Fail",
+                "message": "Wrong file format",
+            }
         
         image_data = imageFile.file.read()
         image = load_image(image_data)
@@ -118,7 +121,10 @@ def predict_image(imageFile: UploadFile, response: Response):
     except Exception as e:
         traceback.print_exc()
         response.status_code = 500
-        return "Internal Server Error"
+        return {
+                "status": "Error",
+                "message": "Internal server error",
+            }
     
 # Threshold Logic
 def is_valid_prediction(prediction, threshold=0.2):
