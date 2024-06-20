@@ -85,6 +85,8 @@ def predict_image(imageFile: UploadFile, response: Response):
         img_height, img_width = 224, 224 
         image = image.resize((img_height, img_width))
         image = np.array(image)
+        if image.shape[-1] == 4:
+            image = image[..., :3]
         image = np.expand_dims(image, axis=0)
         image = tf.keras.applications.vgg16.preprocess_input(image)
         
