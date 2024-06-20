@@ -74,7 +74,10 @@ def predict_image(imageFile: UploadFile, response: Response):
     try:
         if imageFile.content_type not in ["image/jpeg", "image/png"]:
             response.status_code = 400
-            return "File is not an image"
+            return {
+                "status": "Fail",
+                "message": "Wrong file format",
+            }
         
         image_data = imageFile.file.read()
         image = load_image(image_data)
@@ -82,6 +85,8 @@ def predict_image(imageFile: UploadFile, response: Response):
         img_height, img_width = 224, 224 
         image = image.resize((img_height, img_width))
         image = np.array(image)
+        if image.shape[-1] == 4:
+            image = image[..., :3]
         image = np.expand_dims(image, axis=0)
         image = tf.keras.applications.vgg16.preprocess_input(image)
         
@@ -118,7 +123,10 @@ def predict_image(imageFile: UploadFile, response: Response):
     except Exception as e:
         traceback.print_exc()
         response.status_code = 500
-        return "Internal Server Error"
+        return {
+                "status": "Error",
+                "message": "Internal server error",
+            }
     
 # Threshold Logic
 def is_valid_prediction(prediction, threshold=0.2):
